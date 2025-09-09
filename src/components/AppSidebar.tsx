@@ -87,10 +87,12 @@ export function AppSidebar() {
                     <NavLink 
                       to={item.url} 
                       className={({ isActive }) => 
-                        isActive ? "bg-primary text-primary-foreground font-medium" : "hover:bg-muted"
+                        isActive 
+                          ? "bg-primary text-primary-foreground font-medium flex items-center gap-2 px-3 py-2 rounded-md" 
+                          : "text-foreground hover:bg-muted hover:text-sidebar-accent-foreground flex items-center gap-2 px-3 py-2 rounded-md transition-colors"
                       }
                     >
-                      <item.icon className="h-4 w-4" />
+                      <item.icon className="h-4 w-4 flex-shrink-0" style={{ color: 'currentColor' }} />
                       {!isCollapsed && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -108,7 +110,7 @@ export function AppSidebar() {
           </Avatar>
           {!isCollapsed && (
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-sm truncate">{user.name}</p>
+              <p className="font-medium text-sm truncate text-sidebar-foreground">{user.name}</p>
               <p className="text-xs text-muted-foreground truncate">{user.email}</p>
             </div>
           )}
@@ -119,7 +121,7 @@ export function AppSidebar() {
           onClick={logout}
           className="w-full"
         >
-          <LogOut className="h-4 w-4" />
+          <LogOut className="h-4 w-4 text-current" />
           {!isCollapsed && <span className="ml-2">Sair</span>}
         </Button>
       </SidebarFooter>
