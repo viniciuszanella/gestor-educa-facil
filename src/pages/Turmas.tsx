@@ -22,7 +22,10 @@ import {
   DialogTrigger 
 } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Search, Edit, Trash2, BookOpen, Users, Clock } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Plus, Search, Edit, Trash2, BookOpen, Users, Clock, MessageSquare, GraduationCap, Calendar } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 // Mock data
@@ -91,6 +94,38 @@ const mockTeacherClasses = [
 const grades = ['6º Ano', '7º Ano', '8º Ano', '9º Ano'];
 const shifts = ['Manhã', 'Tarde', 'Noite'];
 const teachers = ['Maria Santos', 'João Silva', 'Ana Costa', 'Carlos Lima'];
+
+// Mock students data
+const mockStudents = [
+  {
+    id: '1',
+    name: 'Pedro Oliveira',
+    email: 'pedro@escola.com',
+    avatar_url: '🧑‍🎓',
+    observations: 'Aluno dedicado e participativo nas aulas.'
+  },
+  {
+    id: '2',
+    name: 'Ana Silva',
+    email: 'ana.silva@escola.com',
+    avatar_url: '👩‍🎓',
+    observations: ''
+  },
+  {
+    id: '3',
+    name: 'Carlos Santos',
+    email: 'carlos.santos@escola.com',
+    avatar_url: '👨‍🎓',
+    observations: 'Precisa melhorar a participação em sala.'
+  },
+  {
+    id: '4',
+    name: 'Maria Costa',
+    email: 'maria.costa@escola.com',
+    avatar_url: '👩‍🎓',
+    observations: ''
+  }
+];
 
 function AdminClasses() {
   const [classes, setClasses] = useState(mockClasses);
@@ -381,6 +416,54 @@ function AdminClasses() {
 }
 
 function TeacherClasses() {
+  const [selectedClass, setSelectedClass] = useState<any>(null);
+  const [showStudentsList, setShowStudentsList] = useState(false);
+  const [showGradesDialog, setShowGradesDialog] = useState(false);
+  const [showAttendanceDialog, setShowAttendanceDialog] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<any>(null);
+  const [studentObservation, setStudentObservation] = useState('');
+  const [students, setStudents] = useState(mockStudents);
+  const [grades, setGrades] = useState<{[key: string]: number}>({});
+  const [attendance, setAttendance] = useState<{[key: string]: boolean}>({});
+  const { toast } = useToast();
+
+  const handleStudentSelect = (student: any) => {
+    setSelectedStudent(student);
+    setStudentObservation(student.observations || '');
+  };
+
+  const handleSaveObservation = () => {
+    setStudents(students.map(s => 
+      s.id === selectedStudent.id 
+        ? { ...s, observations: studentObservation }
+        : s
+    ));
+    setSelectedStudent(null);
+    setStudentObservation('');
+    toast({
+      title: "Observação salva",
+      description: "A observação do aluno foi salva com sucesso.",
+    });
+  };
+
+  const handleSaveGrades = () => {
+    toast({
+      title: "Notas lançadas",
+      description: "As notas foram salvas com sucesso.",
+    });
+    setShowGradesDialog(false);
+    setGrades({});
+  };
+
+  const handleSaveAttendance = () => {
+    toast({
+      title: "Frequência registrada", 
+      description: "A frequência foi registrada com sucesso.",
+    });
+    setShowAttendanceDialog(false);
+    setAttendance({});
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -432,21 +515,207 @@ function TeacherClasses() {
               
               <div className="mt-4 pt-4 border-t">
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm">
-                    Ver Lista de Alunos
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    Lançar Notas
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    Registrar Frequência
-                  </Button>
+                  <Dialog open={showStudentsList} onOpenChange={setShowStudentsList}>
+                    <DialogTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setSelectedClass(cls)}
+                      >
+                        <Users className="h-4 w-4 mr-2" />
+                        Ver Lista de Alunos
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>Lista de Alunos - Turma {selectedClass?.name}</DialogTitle>
+                        <DialogDescription>
+                          Clique em um aluno para adicionar observações
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="grid gap-4">
+                        {students.map((student) => (
+                          <Card 
+                            key={student.id} 
+                            className="cursor-pointer hover:bg-muted/50 transition-colors"
+                            onClick={() => handleStudentSelect(student)}
+                          >
+                            <CardContent className="p-4">
+                              <div className="flex items-center gap-3">
+                                <Avatar>
+                                  <AvatarImage src={student.avatar_url} />
+                                  <AvatarFallback>{student.avatar_url}</AvatarFallback>
+                                </Avatar>
+                                <div className="flex-1">
+                                  <p className="font-medium">{student.name}</p>
+                                  <p className="text-sm text-muted-foreground">{student.email}</p>
+                                  {student.observations && (
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                      <MessageSquare className="h-3 w-3 inline mr-1" />
+                                      {student.observations}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Dialog open={showGradesDialog} onOpenChange={setShowGradesDialog}>
+                    <DialogTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setSelectedClass(cls)}
+                      >
+                        <GraduationCap className="h-4 w-4 mr-2" />
+                        Lançar Notas
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-3xl">
+                      <DialogHeader>
+                        <DialogTitle>Lançar Notas - Turma {selectedClass?.name}</DialogTitle>
+                        <DialogDescription>
+                          Digite as notas dos alunos (0 a 10)
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        {students.map((student) => (
+                          <div key={student.id} className="flex items-center gap-4">
+                            <Avatar>
+                              <AvatarImage src={student.avatar_url} />
+                              <AvatarFallback>{student.avatar_url}</AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                              <p className="font-medium">{student.name}</p>
+                            </div>
+                            <div className="w-20">
+                              <Input
+                                type="number"
+                                min="0"
+                                max="10" 
+                                step="0.1"
+                                placeholder="Nota"
+                                value={grades[student.id] || ''}
+                                onChange={(e) => setGrades({
+                                  ...grades,
+                                  [student.id]: parseFloat(e.target.value) || 0
+                                })}
+                              />
+                            </div>
+                          </div>
+                        ))}
+                        <Button onClick={handleSaveGrades} className="w-full">
+                          Salvar Notas
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Dialog open={showAttendanceDialog} onOpenChange={setShowAttendanceDialog}>
+                    <DialogTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setSelectedClass(cls)}
+                      >
+                        <Calendar className="h-4 w-4 mr-2" />
+                        Registrar Frequência
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-3xl">
+                      <DialogHeader>
+                        <DialogTitle>Registrar Frequência - Turma {selectedClass?.name}</DialogTitle>
+                        <DialogDescription>
+                          Marque os alunos presentes na aula de hoje
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        {students.map((student) => (
+                          <div key={student.id} className="flex items-center gap-4">
+                            <Checkbox
+                              id={`attendance-${student.id}`}
+                              checked={attendance[student.id] || false}
+                              onCheckedChange={(checked) => setAttendance({
+                                ...attendance,
+                                [student.id]: !!checked
+                              })}
+                            />
+                            <Avatar>
+                              <AvatarImage src={student.avatar_url} />
+                              <AvatarFallback>{student.avatar_url}</AvatarFallback>
+                            </Avatar>
+                            <Label 
+                              htmlFor={`attendance-${student.id}`}
+                              className="flex-1 cursor-pointer"
+                            >
+                              <p className="font-medium">{student.name}</p>
+                              <p className="text-sm text-muted-foreground">{student.email}</p>
+                            </Label>
+                          </div>
+                        ))}
+                        <Button onClick={handleSaveAttendance} className="w-full">
+                          Salvar Frequência
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      {/* Student Observation Dialog */}
+      {selectedStudent && (
+        <Dialog open={!!selectedStudent} onOpenChange={() => setSelectedStudent(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Observações - {selectedStudent.name}</DialogTitle>
+              <DialogDescription>
+                Adicione observações sobre o aluno
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Avatar>
+                  <AvatarImage src={selectedStudent.avatar_url} />
+                  <AvatarFallback>{selectedStudent.avatar_url}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-medium">{selectedStudent.name}</p>
+                  <p className="text-sm text-muted-foreground">{selectedStudent.email}</p>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Observações</Label>
+                <Textarea
+                  value={studentObservation}
+                  onChange={(e) => setStudentObservation(e.target.value)}
+                  placeholder="Digite suas observações sobre o aluno..."
+                  rows={4}
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={handleSaveObservation} className="flex-1">
+                  Salvar
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setSelectedStudent(null)}
+                  className="flex-1"
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
