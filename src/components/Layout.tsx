@@ -1,15 +1,10 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { useAuth } from "@/contexts/AuthContext";
-import { LoginForm } from "@/components/LoginForm";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
-
-  if (!user) {
-    return <LoginForm />;
-  }
 
   return (
     <SidebarProvider>
@@ -21,7 +16,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <SidebarTrigger />
               <div className="ml-4">
                 <h2 className="font-semibold text-card-foreground">
-                  Bem-vindo, {user.name}
+                  Bem-vindo, {user?.name}
                 </h2>
               </div>
             </div>

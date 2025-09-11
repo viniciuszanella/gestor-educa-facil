@@ -103,7 +103,9 @@ export function AppSidebar() {
       <SidebarFooter className="border-t border-border p-4">
         <div className="flex items-center gap-3 mb-4">
           <Avatar className="h-8 w-8">
-            <AvatarFallback>{user.avatar}</AvatarFallback>
+            <AvatarFallback>
+              {user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+            </AvatarFallback>
           </Avatar>
           {!isCollapsed && (
             <div className="flex-1 min-w-0">

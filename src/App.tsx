@@ -6,12 +6,14 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Layout } from "@/components/Layout";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Dashboard } from "@/pages/Dashboard";
 import { Alunos } from "@/pages/Alunos";
 import { Professores } from "@/pages/Professores";
 import { Turmas } from "@/pages/Turmas";
 import { Notas } from "@/pages/Notas";
 import { Boletim } from "@/pages/Boletim";
+import { Auth } from "@/pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,23 +25,70 @@ const App = () => (
         <Toaster />
         <Sonner />
         <AuthProvider>
-        <BrowserRouter>
-          <Layout>
+          <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/alunos" element={<Alunos />} />
-              <Route path="/professores" element={<Professores />} />
-              <Route path="/turmas" element={<Turmas />} />
-              <Route path="/notas" element={<Notas />} />
-              <Route path="/boletim" element={<Boletim />} />
-              <Route path="/frequencia" element={<Dashboard />} />
-              <Route path="/relatorios" element={<Dashboard />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Dashboard />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/alunos" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Alunos />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/professores" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Professores />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/turmas" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Turmas />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/notas" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Notas />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/boletim" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Boletim />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/frequencia" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Dashboard />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/relatorios" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Dashboard />
+                  </Layout>
+                </ProtectedRoute>
+              } />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </Layout>
-        </BrowserRouter>
-      </AuthProvider>
+          </BrowserRouter>
+        </AuthProvider>
       </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>
