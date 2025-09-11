@@ -33,19 +33,16 @@ const menuByRole = {
     { title: 'Alunos', url: '/alunos', icon: Users },
     { title: 'Professores', url: '/professores', icon: GraduationCap },
     { title: 'Turmas', url: '/turmas', icon: BookOpen },
-    { title: 'Relatórios', url: '/relatorios', icon: BarChart3 },
   ],
   professor: [
     { title: 'Dashboard', url: '/', icon: Home },
     { title: 'Minhas Turmas', url: '/turmas', icon: BookOpen },
     { title: 'Lançar Notas', url: '/notas', icon: ClipboardList },
-    { title: 'Frequência', url: '/frequencia', icon: Calendar },
   ],
   aluno: [
     { title: 'Dashboard', url: '/', icon: Home },
     { title: 'Minhas Notas', url: '/notas', icon: ClipboardList },
     { title: 'Boletim', url: '/boletim', icon: BarChart3 },
-    { title: 'Frequência', url: '/frequencia', icon: Calendar },
   ],
 };
 

@@ -127,10 +127,12 @@ export function Boletim() {
             <FileText className="h-4 w-4 mr-2" />
             Imprimir
           </Button>
-          <Button onClick={handleDownloadPDF}>
-            <Download className="h-4 w-4 mr-2" />
-            Download PDF
-          </Button>
+          {user?.role !== 'aluno' && (
+            <Button onClick={handleDownloadPDF}>
+              <Download className="h-4 w-4 mr-2" />
+              Download PDF
+            </Button>
+          )}
         </div>
       </div>
 
